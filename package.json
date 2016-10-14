@@ -1,0 +1,24 @@
+{
+  "name": "versaphore",
+  "version": "0.0.1",
+  "description": "A react app for comparing translations of poetry",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.swarthmore.edu/bulbil/versaphore.git"
+  },
+  "author": "Nabil Kashyap",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "gulp": "^3.9.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-util": "^3.0.7",
+    "gulp-webserver": "^0.9.1",
+    "lodash": "^4.16.4",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "reactify": "^1.1.1"
+  }
+}
