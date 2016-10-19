@@ -1,5 +1,5 @@
 var React = require('react');
-var Apparatus = require('./Apparatus');
+// var Apparatus = require('./Apparatus');
 
 var Witness = React.createClass({
     render: function(){
@@ -9,7 +9,7 @@ var Witness = React.createClass({
         var words = [];
 
         for(var i=0; i<10; i++){
-            words.push(<Apparatus key = { i }/>);
+            // words.push(<Apparatus key = { i }/>);
         }
 
 

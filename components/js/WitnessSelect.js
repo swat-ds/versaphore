@@ -1,11 +1,16 @@
-var React = require('react');
-var _ = require('lodash');
+var React = require('react'),
+    _ = require('lodash');
 
 var WitnessSelect = React.createClass({
 
-    handleSelect: function(e){
+    handleWorkspaceSelect: function(e){
         e.preventDefault();
-        return this.props.onSelect(e.target.value);
+        return this.props.onWorkspaceSelect(e.target.value);
+    },
+
+    handleBaseSelect: function(e){
+        e.preventDefault();
+        return this.props.onBaseSelect(e.target.value);
     },
 
     handleAdd: function(){
@@ -25,23 +30,44 @@ var WitnessSelect = React.createClass({
             );
         });
 
+        var baseOptions = _.map(this.props.witnesses, function(item,index){
+
+            var witID = _.keys(item)[0];
+
+            return(
+                <option value = { witID } key = { index }>{ item[witID] }</option>
+            );
+        });
+
         return (
 
             <div className="row">
 
-            <div className="form-inline pull-left col-md-4 col-md-offset-1">
+            <div className="form-inline pull-left col-md-4">
+                <div className="form-group"><label className="text-muted" htmlFor=" workspaceSelect">
+                        base witness
+                    </label>
+                <select name="baseSelect" id=" baseSelect" className="form-control" onChange={ this.handleBaseSelect }>
+                    { baseOptions }
+                </select>
+
+                </div>
+            </div>
+            <div className="form-inline text-right pull-right col-md-4">
             <div className="form-group">
-            <label htmlFor="baseSelect"></label>
-            <select id="baseSelect" className="form-control" onChange={ this.handleSelect }>
+
+            <label className="text-muted" htmlFor="workspaceSelect">workspace</label>
+            <select name="workspaceSelect" id="workspaceSelect" className="form-control" onChange={ this.handleWorkspaceSelect }>
             <option></option>
             { workspaceOptions }
             </select>
-            </div>        
-            </div>
 
-            <div className="pull-right col-md-4">
+            <div className="form-group">
             <button className="btn btn-primary btn-success"><span className="glyphicon glyphicon-plus" onClick = { this.handleAdd }></span></button>
             <button className="btn btn-primary btn-danger"><span className="glyphicon glyphicon-remove" onClick = { this.handleDelete }></span></button>
+            </div>
+
+            </div>        
             </div>
 
             </div>

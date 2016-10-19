@@ -1,5 +1,6 @@
 var React = require('react'),
     ReactDOM = require('react-dom'),
+    Series = require('async-series'),
     _ = require('lodash');
 
 var WitnessSelect = require('./WitnessSelect'),
@@ -13,13 +14,13 @@ var MainInterface = React.createClass({
         return {
 
             workspaces: [],
-            currentBase: "",
+            currentBase: {},
 
-            // { "workspaceName":"","sheetID":""}
+            // { "workspaceName":"","sheetKey":""}
             currentWorkspace: {},
 
-            // [{ "witID": "author"}]
-            witnesses: [],
+            // {{ "witnessID":"", "creator":""}}
+            witnesses: {},
 
             // {"appID": 
                     // [ int witID, str reading ]
@@ -49,50 +50,68 @@ var MainInterface = React.createClass({
     setCurrentWorkspace: function(workspaceName){
 
         if( this.state.currentWorkspace == ""){
-            $('#baseSelect option:first-child').remove();
+            $('# workspaceSelect option:first-child').remove();
         }
 
         var currentWorkspace = _.find(this.state.workspaces,function(o){
             return o.workspaceName == workspaceName;
         });
 
-        var currentApparatus = this.setCurrentApparatus(currentWorkspace.sheetID);
+        this.setState({ currentWorkspace: currentWorkspace });
+        this.setCurrentWitnesses();
+
+    },
+
+    setCurrentWitnesses: function(){
+
+        if( this.state.currentWorkspace == null ){
+            console.log('null');
+        }
+
+        var url = [
+            this.state.googleAPI.scope,
+            this.state.currentWorkspace.sheetKey,
+            'values',
+            'Sheet1'
+        ].join('/');
+
+        this.serverRequest = $.ajax({
+                url: url,
+                data: {
+                    key: this.state.googleAPI.key,
+                    majorDimension: 'ROWS',
+                    range: 'Sheet1!A2:Z2'
+                }
+            }).done(function(d){
+
+                var currentWitnesses = {};
+                _.each(d.values[0],function(v,i){
+                    var currentWitness = {};
+                    currentWitness["wit-"+i] = v;
+                    currentWitnesses[i] = currentWitness;
+                });
+                this.setState({
+                    witnesses: currentWitnesses
+                });
+
+            }.bind(this));
+
+    },
+
+    setCurrentBase: function(witnessID){
+
+       if( this.state.currentBase == ""){
+            $('#baseSelect option:first-child').remove();
+        }
+
+        var currentBase = _.find(this.state.witnesses,function(o){
+            return o.witnessID == witnessID;
+        });
 
         this.setState({ 
-            currentWorkspace: currentWorkspace,
-            apparatus: currentApparatus
+            currentBase: currentBase,
         });
-    }, // setCurrentWorkspace
 
-    setCurrentApparatus: function(sheetID){
-
-        var currentApparatus = {};
-        $.ajax({
-
-            url: [this.state.googleAPI.scope,
-                  sheetID,
-                  'values',
-                  'Sheet1'].join('/'),
-            data: {
-                    key: this.state.googleAPI.key,
-                    majorDimension: 'COLUMNS'
-                },
-            success: function(d){
-                _.each(d.values[0], function(v,i){
-
-                    // TODO for each app
-
-                    // currReading = []
-                    // currReading[0] = witID
-                    // currReading[1] = value
-
-                    // currApp = {}
-                    // currApp["'" + i + "'"][0] = []
-                    // currApp["'" + i + "'"][0] = currReading
-
-                });
-            }
-        });
     },
 
     addWorkspace: function(){
@@ -110,14 +129,24 @@ var MainInterface = React.createClass({
 
         // TODO post data to json php
         this.setState({ workspaces: currentWorkspaces});
+        this.setCurrentWitnesses();
 
     }, // deleteWorkspace
 
     render: function(){
         return (
             <div id="interface">
+            <Apparatus 
+                witnesses = { this.state.witnesses }
+                base = { this.state.currentBase }
+                workspace = { this.state.currentWorkspace }
+                onGetWitnesses = { this.setCurrentWitnesses }
+            />
             <WitnessSelect 
                 workspaces = { this.state.workspaces }
+                witnesses = { this.state.witnesses }
+                onWorkspaceSelect = { this.setCurrentWorkspace }
+                onBaseSelect = { this.setCurrentBase }
                 onSelect = { this.setCurrentWorkspace }
                 onAdd = { this.addWorkspace }
                 onDelete = { this.deleteWorkspace }
