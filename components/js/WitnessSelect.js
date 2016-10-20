@@ -58,7 +58,7 @@ var WitnessSelect = React.createClass({
 
             <label className="text-muted" htmlFor="workspaceSelect">workspace</label>
             <select name="workspaceSelect" id="workspaceSelect" className="form-control" onChange={ this.handleWorkspaceSelect }>
-            <option></option>
+            <option value=""></option>
             { workspaceOptions }
             </select>
 

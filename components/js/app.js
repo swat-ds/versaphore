@@ -14,7 +14,7 @@ var MainInterface = React.createClass({
         return {
 
             workspaces: [],
-            currentBase: {},
+            currentBase: "",
 
             // { "workspaceName":"","sheetKey":""}
             currentWorkspace: {},
@@ -23,7 +23,10 @@ var MainInterface = React.createClass({
             witnesses: {},
 
             // {"appID": 
-                    // [ int witID, str reading ]
+                    // { str witID: str reading  },
+                    // { str witID: str reading  },
+                    // { str witID: str reading  }
+                    
             apparatus: {},
 
             googleAPI: {
@@ -47,56 +50,105 @@ var MainInterface = React.createClass({
         this.serverRequest.abort();
     }, // componentWillUnmount
 
-    setCurrentWorkspace: function(workspaceName){
+    handleWorkspaceUpdate: function(workspaceName){
 
-        if( this.state.currentWorkspace == ""){
-            $('# workspaceSelect option:first-child').remove();
-        }
+        var currentWorkspace = this.getCurrentWorkspace(workspaceName);
+        this.setCurrentWorkspace(currentWorkspace);
+        this.setCurrentWitnesses(currentWorkspace);
 
+        var currentBase = _.isEmpty(currentWorkspace) ? "" : "wit-0";
+        this.setState({ currentBase: currentBase });
+
+    }, // handleWorkspaceUpdate
+
+    getCurrentWorkspace: function(workspaceName){
+ 
         var currentWorkspace = _.find(this.state.workspaces,function(o){
             return o.workspaceName == workspaceName;
         });
 
-        this.setState({ currentWorkspace: currentWorkspace });
-        this.setCurrentWitnesses();
+        return currentWorkspace;
+    }, // getCurrentWorkspace
 
-    },
+    setCurrentWorkspace: function(currentWorkspace){
 
-    setCurrentWitnesses: function(){
-
-        if( this.state.currentWorkspace == null ){
-            console.log('null');
+        if( this.state.currentWorkspace == ""){
+            $('#workspaceSelect option:first-child').remove();
         }
 
-        var url = [
-            this.state.googleAPI.scope,
-            this.state.currentWorkspace.sheetKey,
-            'values',
-            'Sheet1'
-        ].join('/');
+        this.setState({ currentWorkspace: currentWorkspace });
+    }, // setCurrentWorkspace
 
-        this.serverRequest = $.ajax({
-                url: url,
-                data: {
-                    key: this.state.googleAPI.key,
-                    majorDimension: 'ROWS',
-                    range: 'Sheet1!A2:Z2'
-                }
-            }).done(function(d){
+    getCurrentWitnesses: function(creatorArray){
 
-                var currentWitnesses = {};
-                _.each(d.values[0],function(v,i){
-                    var currentWitness = {};
-                    currentWitness["wit-"+i] = v;
-                    currentWitnesses[i] = currentWitness;
-                });
-                this.setState({
-                    witnesses: currentWitnesses
-                });
+        var currentWitnesses = {};
+        _.each(creatorArray,function(v,i){
+            var currentWitness = {};
+            currentWitness["wit-"+i] = v;
+            currentWitnesses[i] = currentWitness;
+        });
 
-            }.bind(this));
+        return currentWitnesses;
 
-    },
+    }, // getCurrentWitnesses
+
+    setCurrentWitnesses: function(currentWorkspace = this.state.currentWorkspace){
+
+        if( _.isEmpty(currentWorkspace) ) {
+            this.setState({ witnesses: {} });            
+        } else {
+
+            var url = [
+                this.state.googleAPI.scope,
+                currentWorkspace.sheetKey,
+                'values',
+                'Sheet1'
+            ].join('/');
+
+            this.serverRequest = $.ajax({
+                    url: url,
+                    data: {
+                        key: this.state.googleAPI.key,
+                        majorDimension: 'ROWS',
+                    }
+                }).done(function(d){
+
+
+                    var rows = d.values;
+
+                    rows.shift();
+                    var creatorArray = rows.shift();
+                    console.log(creatorArray);
+                    var currentWitnesses = this.getCurrentWitnesses(creatorArray);
+                    var currentApparatus = this.getCurrentApparatus(rows);
+
+                    this.setState({
+                        witnesses: currentWitnesses,
+                        apparatus: currentApparatus
+                    });
+
+                }.bind(this));
+        }
+    }, // setCurrentWitnesses
+
+    getCurrentApparatus: function(rows) {
+
+        var currentApparatus = {};
+
+        _.each(rows, function(v,i){
+
+            var index = 'app-' + i;
+            currentApparatus[index] = {}; 
+
+            _.each(rows[i], function(v,i){
+                currentApparatus[index]['wit-'+i] = v;
+            })
+
+        }.bind(this));
+
+        return currentApparatus;
+
+    }, // getCurrentApparatus
 
     setCurrentBase: function(witnessID){
 
@@ -104,15 +156,11 @@ var MainInterface = React.createClass({
             $('#baseSelect option:first-child').remove();
         }
 
-        var currentBase = _.find(this.state.witnesses,function(o){
-            return o.witnessID == witnessID;
-        });
-
         this.setState({ 
-            currentBase: currentBase,
+            currentBase: witnessID
         });
 
-    },
+    }, // setCurrentBase
 
     addWorkspace: function(){
 
@@ -127,9 +175,16 @@ var MainInterface = React.createClass({
             return o.workspaceName !== this.state.currentWorkspace.workspaceName;
         }.bind(this));
 
+        var currentWorkspace = _.isEmpty(currentWorkspaces) ? {} : currentWorkspaces[0];
+        var currentBase = _.isEmpty(currentWorkspaces) ? "" : "wit-0";
+
         // TODO post data to json php
-        this.setState({ workspaces: currentWorkspaces});
-        this.setCurrentWitnesses();
+        this.setState({ 
+                workspaces: currentWorkspaces,
+                currentWorkspace: currentWorkspace,
+                currentBase: currentBase
+            });
+        this.setCurrentWitnesses(currentWorkspace);
 
     }, // deleteWorkspace
 
@@ -145,7 +200,7 @@ var MainInterface = React.createClass({
             <WitnessSelect 
                 workspaces = { this.state.workspaces }
                 witnesses = { this.state.witnesses }
-                onWorkspaceSelect = { this.setCurrentWorkspace }
+                onWorkspaceSelect = { this.handleWorkspaceUpdate }
                 onBaseSelect = { this.setCurrentBase }
                 onSelect = { this.setCurrentWorkspace }
                 onAdd = { this.addWorkspace }
