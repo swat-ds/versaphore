@@ -4,7 +4,6 @@ var React = require('react'),
     _ = require('lodash');
 
 var WitnessSelect = require('./WitnessSelect'),
-    Witness = require('./Witness'),
     Apparatus = require('./Apparatus'),
     ReadingsCompare = require('./ReadingsCompare');
 
@@ -14,21 +13,23 @@ var MainInterface = React.createClass({
         return {
 
             workspaces: [],
-            currentBase: "",
-
+            workTitle: "",
+            
             // { "workspaceName":"","sheetKey":""}
             currentWorkspace: {},
+            currentBase: "",
+            currentApparatus: [],
+
+            apparatus: {},
 
             // {{ "witnessID":"", "creator":""}}
             witnesses: {},
 
-            // {"appID": 
+            // ["appID": 
                     // { str witID: str reading  },
                     // { str witID: str reading  },
-                    // { str witID: str reading  }
+                    // { str witID: str reading  } ]
                     
-            apparatus: {},
-
             googleAPI: {
                 scope: 'https://sheets.googleapis.com/v4/spreadsheets',
                 key: `${googleAPIKey}`            }
@@ -72,7 +73,7 @@ var MainInterface = React.createClass({
 
     setCurrentWorkspace: function(currentWorkspace){
 
-        if( this.state.currentWorkspace == ""){
+        if( _.isEmpty(this.state.currentWorkspace) ){
             $('#workspaceSelect option:first-child').remove();
         }
 
@@ -82,10 +83,10 @@ var MainInterface = React.createClass({
     getCurrentWitnesses: function(creatorArray){
 
         var currentWitnesses = {};
-        _.each(creatorArray,function(v,i){
+        _.each(creatorArray,function(item,index){
             var currentWitness = {};
-            currentWitness["wit-"+i] = v;
-            currentWitnesses[i] = currentWitness;
+            currentWitness[ "wit-" + index ] = item;
+            currentWitnesses[index] = currentWitness;
         });
 
         return currentWitnesses;
@@ -117,14 +118,16 @@ var MainInterface = React.createClass({
                     var rows = d.values;
 
                     rows.shift();
+                    var title = rows.shift()[1];
                     var creatorArray = rows.shift();
-                    console.log(creatorArray);
+                    creatorArray.shift();
                     var currentWitnesses = this.getCurrentWitnesses(creatorArray);
                     var currentApparatus = this.getCurrentApparatus(rows);
 
                     this.setState({
                         witnesses: currentWitnesses,
-                        apparatus: currentApparatus
+                        apparatus: currentApparatus,
+                        workTitle: title
                     });
 
                 }.bind(this));
@@ -133,26 +136,35 @@ var MainInterface = React.createClass({
 
     getCurrentApparatus: function(rows) {
 
-        var currentApparatus = {};
+        var allApparatus = [];
+        var appID = 1;
 
-        _.each(rows, function(v,i){
+        // console.log(rows);
 
-            var index = 'app-' + i;
-            currentApparatus[index] = {}; 
+        _.each(rows, function(item,index){
 
-            _.each(rows[i], function(v,i){
-                currentApparatus[index]['wit-'+i] = v;
-            })
+            var currentApparatus = {};
+            var currentSpanID = _.isEmpty(item.shift()) ? "span" : "app-" + appID;
+            currentApparatus[currentSpanID] = {};
+            appID += 1;
+
+            _.each(rows[index], function(item,index){
+
+                if( !(_.isEmpty(item)) ) currentApparatus[currentSpanID]['wit-'+index] = item;
+
+            });
+
+            allApparatus.push(currentApparatus);
 
         }.bind(this));
 
-        return currentApparatus;
+        return allApparatus;
 
     }, // getCurrentApparatus
 
     setCurrentBase: function(witnessID){
 
-       if( this.state.currentBase == ""){
+       if( _.isEmpty(this.state.currentBase) ){
             $('#baseSelect option:first-child').remove();
         }
 
@@ -162,7 +174,9 @@ var MainInterface = React.createClass({
 
     }, // setCurrentBase
 
-    addWorkspace: function(){
+    addWorkspace: function(workspace){
+
+        console.log(workspace);
 
         // TODO post data to json php
         this.setState({});
@@ -188,15 +202,33 @@ var MainInterface = React.createClass({
 
     }, // deleteWorkspace
 
+    updateCompareReadings: function(target) {
+        
+        var currentApparatus = _.map($(target).children(),function(item,index){
+            
+            var currItem = $(item);
+            var witID = currItem.attr("class").split(' ')[0];
+            var currReading = currItem.html();
+
+            console.log(witID);
+            console.log(currReading);
+
+            return {
+                    witID: witID, 
+                    reading: currReading 
+                };
+
+        });
+
+        this.setState({
+            currentApparatus: currentApparatus
+        });
+    },
+
     render: function(){
+
         return (
             <div id="interface">
-            <Apparatus 
-                witnesses = { this.state.witnesses }
-                base = { this.state.currentBase }
-                workspace = { this.state.currentWorkspace }
-                onGetWitnesses = { this.setCurrentWitnesses }
-            />
             <WitnessSelect 
                 workspaces = { this.state.workspaces }
                 witnesses = { this.state.witnesses }
@@ -207,8 +239,15 @@ var MainInterface = React.createClass({
                 onDelete = { this.deleteWorkspace }
             />
             <div className="row">
-            <Witness />
-            <ReadingsCompare />
+            <Apparatus 
+                witnesses = { this.state.witnesses }
+                apparatus = { this.state.apparatus }
+                base = { this.state.currentBase }
+                compareReadings = { this.updateCompareReadings }
+            />
+            <ReadingsCompare
+                apparatus = { this.state.currentApparatus }
+            />
             </div>
             </div>
         ); // return

@@ -1,46 +1,65 @@
 var React = require('react');
+var _ = require('lodash');
 
 var Apparatus = React.createClass({
 
-    // function getCurrentWorkspaceData(workspace,params){
+    gsheetToHTML: function(string){
 
-    //     var url = [
-    //         params.scope,
-    //         workspace.sheetKey,
-    //         'values',
-    //         'Sheet1'
-    //         ].join('/');
+        var html = "";
 
-    //     $.ajax({
-    //         url: url,
-    //         data: {
-    //             key: params.key,
-    //             majorDimension: 'ROWS'
-    //         },
-    //         success: function(d){ return d; }
-    //     });
-    // }
+        switch(string){
+            case "/br": html = {__html: "<br/>"}; break;
+            case "/tab": html = {__html: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}; break;
+            case "/span": html = ""; break;
+            default: html = string + " "; break;
+        }
 
-    // var currentWorkspaceData = yield getCurrentWorkspaceData(currentWorkspace,this.state.googleAPI);
-    // console.log(currentWorkspaceData);
+        return html;
+    },
 
-    handleGetWitnesses: function(){
+    handleMouseOver: function(e){
 
-        console.log('fire handle');
-
-        var witnesses = [
-            { "witnessID": "akhmatova" },
-            { "witnessID": "laird" },
-            { "witnessID": "hemeshleyer" }
-        ];
-
-        return this.props.onGetWitnesses(witnesses);
+        e.preventDefault(e);
+        this.props.compareReadings(e.currentTarget);
 
     },
 
     render: function(){
 
-        return <p> words </p>;
+
+        var reactKey = 0;
+        var apparatusHTML = _.map(this.props.apparatus, function(item,index){
+
+            var currID = _.keys(item);
+            var currApp = item[currID];
+
+            var spanHTML = _.map(currApp, function(item,index){
+
+                var html = this.gsheetToHTML(item);
+
+                var className = this.props.base === index ? index : index + " hide";
+
+                if( _.isObject(html)){
+
+                    return <span key = { index } className={ className } dangerouslySetInnerHTML={ html }></span>;
+
+                } else {
+
+                    return <span key = { index } className={ className }>{ html }</span>;
+
+                }
+
+            }.bind(this));
+
+            return <span key = { index } className = { currID } onMouseOver={ this.handleMouseOver }>{ spanHTML }</span>;
+
+        }.bind(this));
+
+        return(
+            <div className = "col-md-6 pull-left">   
+            { apparatusHTML }
+            </div>
+        );
     }
 });
 

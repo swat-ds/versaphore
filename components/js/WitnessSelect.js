@@ -1,6 +1,9 @@
 var React = require('react'),
     _ = require('lodash');
 
+var WorkspaceAdd = require('./WorkspaceAdd');
+
+
 var WitnessSelect = React.createClass({
 
     handleWorkspaceSelect: function(e){
@@ -13,8 +16,8 @@ var WitnessSelect = React.createClass({
         return this.props.onBaseSelect(e.target.value);
     },
 
-    handleAdd: function(){
-        return this.props.onAdd();
+    handleAdd: function(newWorkspace){
+        return this.props.onAdd(newWorkspace);
     },
 
     handleDelete: function(){
@@ -63,13 +66,15 @@ var WitnessSelect = React.createClass({
             </select>
 
             <div className="form-group">
-            <button className="btn btn-primary btn-success"><span className="glyphicon glyphicon-plus" onClick = { this.handleAdd }></span></button>
+            <button className="btn btn-primary btn-success" data-toggle="modal" data-target="#workspaceAdd"><span className="glyphicon glyphicon-plus"></span></button>
             <button className="btn btn-primary btn-danger"><span className="glyphicon glyphicon-remove" onClick = { this.handleDelete }></span></button>
             </div>
 
             </div>        
             </div>
-
+            <WorkspaceAdd 
+                addWorkspace = { this.handleAdd }
+            />
             </div>
         );
     }
