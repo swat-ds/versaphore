@@ -3,7 +3,7 @@
 // simple script to save workspace data as json for
 // versaphore app
 
-$json = file_get_contents('data.json');
+$json = file_get_contents('js/data.json');
 $data = json_decode($json);
 
 $new_workspace['workspaceName'] = $_GET['name'];
@@ -12,7 +12,7 @@ array_push($data,$new_workspace);
 
 $json = json_encode($data);
 
-$fh = fopen('data.json','w') or die ("can't open!");
+$fh = fopen('js/data.json','w') or die ("can't open!");
 
 fwrite($fh,$json);
 fclose($fh);
