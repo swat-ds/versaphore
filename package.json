@@ -12,6 +12,7 @@
   "dependencies": {
     "async-series": "0.0.1",
     "bootstrap-sass": "^3.3.7",
+    "bootstrap-select": "^1.11.2",
     "gulp": "^3.9.1",
     "gulp-browserify": "^0.5.1",
     "gulp-sass": "^2.3.2",

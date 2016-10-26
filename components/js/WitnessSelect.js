@@ -3,7 +3,6 @@ var React = require('react'),
 
 var WorkspaceAdd = require('./WorkspaceAdd');
 
-
 var WitnessSelect = React.createClass({
 
     getInitialState: function() {
@@ -24,7 +23,7 @@ var WitnessSelect = React.createClass({
 
     handleExcludeSelect: function(e){
         e.preventDefault();
-        console.log('fire');
+        console.log(e.target.value);
         return this.props.onExcludeSelect(e.target.value);
     },
 
@@ -53,16 +52,6 @@ var WitnessSelect = React.createClass({
             );
         });
 
-        var excludeOptions = _.map(this.props.witnesses, function(item,index){
-
-                var witID = _.keys(item)[0];
-
-                return(
-                    <li key = { index }>
-                        <a href="#" className="small" onClick = { this.handleExcludeSelect }><input type="checkbox" value = { witID }/>&nbsp;{ item[witID] }</a>
-                    </li>
-                );
-         });
 
         return (
 
@@ -71,33 +60,23 @@ var WitnessSelect = React.createClass({
             <div className="form-inline pull-left col-md-8"> 
                 <div className="form-group">
 
-                <label className="text-muted" htmlFor="workspaceSelect">
+                <label className="text-muted" htmlFor="baseSelect">
                     base witness
                 </label>
-                <select name="baseSelect" id=" baseSelect" className="form-control" onChange={ this.handleBaseSelect }>
+                <select name="baseSelect" id="baseSelect" className="form-control" value="" onChange={ this.handleBaseSelect }>
                     { baseOptions }
                 </select>
                 </div>
 
-                <div className="form-group">
-                    <label className="text-muted" htmlFor="excludeSelect">
-                        exclude list
-                    </label>
-
-                    <button id="excludeList" type="button" className="btn btn-default btn-sm dropdown-toggle form-control" data-toggle="dropdown"><span className="caret"></span></button>
-                    <ul className="dropdown-menu" aria-labelledby="excludeList">
-                        { excludeOptions }
-                    </ul>
-                </div>
-
+                <ExcludeSelect witnesses = { this.props.witnesses } />
             </div>
             
             <div className="form-inline text-right pull-right col-md-4">
             <div className="form-group">
 
             <label className="text-muted" htmlFor="workspaceSelect">workspace</label>
-            <select name="workspaceSelect" id="workspaceSelect" className="form-control" onClick={ this.handleWorkspaceSelect }>
-            <option value=""></option>
+            <select name="workspaceSelect" id="workspaceSelect" className="form-control" onChange={ this.handleWorkspaceSelect }>
+            <option value="">select workspace</option>
             { workspaceOptions }
             </select>
 
@@ -116,5 +95,58 @@ var WitnessSelect = React.createClass({
     }
 });
 
+var ExcludeSelect = React.createClass({
+
+    getInitialState: function() {
+        return{
+            value: []
+        };
+    },
+
+    handleExcludeSelect: function(e){
+        e.preventDefault();
+
+        var currSelected = this.state.value;
+
+        if(_.indexOf(currSelected, e.target.value) == -1){
+            currSelected.push(e.target.value);
+        } else {
+            _.remove(currSelected, function(o){
+                console.log(o !== e.target.value);
+                console.log(o != e.target.value);
+                return o != e.target.value;
+            });
+        }
+
+        console.log(e.target.value);
+        console.log(currSelected);
+
+        this.setState({ value: currSelected });
+    },
+
+    render: function(){
+        var baseOptions = _.map(this.props.witnesses, function(item,index){
+
+            var witID = _.keys(item)[0];
+            return(
+            <option value = { witID } key = { index }>{ item[witID] }</option>
+        );
+        });
+
+        return(
+
+            <div className="form-group">
+            <label className="text-muted" htmlFor="excludeSelect">
+                base witness
+            </label>
+            <select multiple={ true } name="excludeSelect" id="excludeSelect" className="form-control" value={ this.state.value } onChange={ this.handleExcludeSelect }>
+                { baseOptions }
+            </select>
+            </div>
+
+            );
+    }
+
+});
 
 module.exports = WitnessSelect;

@@ -5,7 +5,8 @@ var gulp = require('gulp'),
 
 var src = './components',
     dest = './builds/app',
-    twbs = './node_modules/bootstrap-sass/assets';
+    twbs = './node_modules/bootstrap-sass/assets',
+    bsSelect = './node_modules/bootstrap-select/dist';
 
 gulp.task('js', function(){
     return gulp.src( src + '/js/app.js' )

@@ -73,11 +73,7 @@ var MainInterface = React.createClass({
     }, // getCurrentWorkspace
 
     setCurrentWorkspace: function(currentWorkspace){
-
-        if( _.isEmpty(this.state.currentWorkspace) ){
-            $('#workspaceSelect option:first-child').remove();
-        }
-
+        console.log(currentWorkspace);
         this.setState({ currentWorkspace: currentWorkspace });
     }, // setCurrentWorkspace
 
