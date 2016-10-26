@@ -176,8 +176,8 @@ var MainInterface = React.createClass({
         this.serverRequest = $.ajax({
                 url: this.state.saveWorkspaceURL,
                 data: {
-                    workspaceName: workspace.workspaceName,
-                    sheetKey: workspace.sheetKey
+                    name: workspace.workspaceName,
+                    key: workspace.sheetKey
                 }
             }).done(function(d){
                 this.setState({ workspaces: currWorkspaces });
