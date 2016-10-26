@@ -38,7 +38,7 @@ var WorkspaceAdd = React.createClass({
             sheetKey: sheetKey
             };
 
-        this.props.onAdd(newWorkspace);
+        this.props.addWorkspace(newWorkspace);
     },
 
     render: function(){
@@ -68,7 +68,7 @@ var WorkspaceAdd = React.createClass({
                 </div>
                 <div className="modal-footer">
                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" className={ isValid ? "btn btn-primary" : "btn btn-primary disabled" } onClick={ this.handleAdd }>Save changes</button>
+                <button type="submit" className={ isValid ? "btn btn-primary" : "btn btn-primary disabled" } onClick={ this.handleAdd } data-dismiss="modal">Save changes</button>
                 </div>
             </div> // content
             </div> // dialog

@@ -21,10 +21,8 @@ var WitnessSelect = React.createClass({
         return this.props.onBaseSelect(e.target.value);
     },
 
-    handleExcludeSelect: function(e){
-        e.preventDefault();
-        console.log(e.target.value);
-        return this.props.onExcludeSelect(e.target.value);
+    handleExcludeSelect: function(excludeList){
+        return this.props.onExcludeSelect(excludeList);
     },
 
     handleAdd: function(newWorkspace){
@@ -68,7 +66,10 @@ var WitnessSelect = React.createClass({
                 </select>
                 </div>
 
-                <ExcludeSelect witnesses = { this.props.witnesses } />
+                <ExcludeSelect 
+                    witnesses = { this.props.witnesses }
+                    onExcludeSelect = { this.handleExcludeSelect }
+                />
             </div>
             
             <div className="form-inline text-right pull-right col-md-4">
@@ -122,6 +123,7 @@ var ExcludeSelect = React.createClass({
         console.log(currSelected);
 
         this.setState({ value: currSelected });
+        this.props.onExcludeSelect(this.state.currSelected);
     },
 
     render: function(){

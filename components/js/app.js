@@ -206,8 +206,8 @@ var MainInterface = React.createClass({
         });
     },
 
-    setCurrentExclude: function(target){
-        return 1;
+    setCurrentExclude: function(excludeList){
+        this.setState({ currentExcludeList: excludeList });
     },
 
     render: function(){
@@ -229,6 +229,7 @@ var MainInterface = React.createClass({
                 witnesses = { this.state.witnesses }
                 apparatus = { this.state.apparatus }
                 base = { this.state.currentBase }
+                excludeList = { this.state.currentExludeList }
                 getCurrentReadings = { this.updateCurrentReadings }
             />
             <ReadingsCompare

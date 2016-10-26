@@ -7,12 +7,6 @@ var Apparatus = React.createClass({
 
     getCurrentReadings: function(appid){
 
-        // var currentReadings = _.map($(e.currentTarget).children(),function(item,index){
-
-        // var currItem = $(item);
-        // var witID = currItem.attr("class").split(' ')[0];
-        // var currReading = currItem.html();
-
         var currentReadings = _.find(this.props.apparatus,appid);
         this.props.getCurrentReadings(currentReadings,appid);
     },
@@ -28,6 +22,7 @@ var Apparatus = React.createClass({
             return (
                 <Reading
                 base = { this.props.base }
+                exclude = { this.props.excludeList }
                 appID = { currID }
                 currApp = { item[currID] }
                 key = { index }
