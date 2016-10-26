@@ -19,7 +19,8 @@ var MainInterface = React.createClass({
             // { "workspaceName":"","sheetKey":""}
 
             currentBase: "",
-            currentApparatus: [],
+            currentReadings: {},
+            currentExludeList: [],
 
             apparatus: {},
             // ["appID": 
@@ -197,31 +198,20 @@ var MainInterface = React.createClass({
                 currentWorkspace: currentWorkspace,
                 currentBase: currentBase
             });
+        
         this.setCurrentWitnesses(currentWorkspace);
 
     }, // deleteWorkspace
 
-    updateCompareReadings: function(target) {
-        
-        var currentApparatus = _.map($(target).children(),function(item,index){
-            
-            var currItem = $(item);
-            var witID = currItem.attr("class").split(' ')[0];
-            var currReading = currItem.html();
-
-            console.log(witID);
-            console.log(currReading);
-
-            return {
-                    witID: witID, 
-                    reading: currReading 
-                };
-
-        });
+    updateCurrentReadings: function(readings,appid) {
 
         this.setState({
-            currentApparatus: currentApparatus
+            currentReadings: readings[appid]
         });
+    },
+
+    setCurrentExclude: function(target){
+        return 1;
     },
 
     render: function(){
@@ -233,6 +223,7 @@ var MainInterface = React.createClass({
                 witnesses = { this.state.witnesses }
                 onWorkspaceSelect = { this.handleWorkspaceUpdate }
                 onBaseSelect = { this.setCurrentBase }
+                onExcludeSelect = { this.setCurrentExclude }
                 onSelect = { this.setCurrentWorkspace }
                 onAdd = { this.addWorkspace }
                 onDelete = { this.deleteWorkspace }
@@ -242,10 +233,11 @@ var MainInterface = React.createClass({
                 witnesses = { this.state.witnesses }
                 apparatus = { this.state.apparatus }
                 base = { this.state.currentBase }
-                compareReadings = { this.updateCompareReadings }
+                getCurrentReadings = { this.updateCurrentReadings }
             />
             <ReadingsCompare
-                apparatus = { this.state.currentApparatus }
+                readings = { this.state.currentReadings }
+                witnesses = { this.state.witnesses }
             />
             </div>
             </div>

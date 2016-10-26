@@ -1,27 +1,20 @@
-var React = require('react');
-var _ = require('lodash');
+var React = require('react'),
+    _ = require('lodash');
+
+var Reading = require('./Reading');
 
 var Apparatus = React.createClass({
 
-    gsheetToHTML: function(string){
+    getCurrentReadings: function(appid){
 
-        var html = "";
+        // var currentReadings = _.map($(e.currentTarget).children(),function(item,index){
 
-        switch(string){
-            case "/br": html = {__html: "<br/>"}; break;
-            case "/tab": html = {__html: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}; break;
-            case "/span": html = ""; break;
-            default: html = string + " "; break;
-        }
+        // var currItem = $(item);
+        // var witID = currItem.attr("class").split(' ')[0];
+        // var currReading = currItem.html();
 
-        return html;
-    },
-
-    handleMouseOver: function(e){
-
-        e.preventDefault(e);
-        this.props.compareReadings(e.currentTarget);
-
+        var currentReadings = _.find(this.props.apparatus,appid);
+        this.props.getCurrentReadings(currentReadings,appid);
     },
 
     render: function(){
@@ -31,27 +24,17 @@ var Apparatus = React.createClass({
         var apparatusHTML = _.map(this.props.apparatus, function(item,index){
 
             var currID = _.keys(item);
-            var currApp = item[currID];
 
-            var spanHTML = _.map(currApp, function(item,index){
+            return (
+                <Reading
+                base = { this.props.base }
+                appID = { currID }
+                currApp = { item[currID] }
+                key = { index }
+                getCurrentReadings = { this.getCurrentReadings }
+                />
+                );
 
-                var html = this.gsheetToHTML(item);
-
-                var className = this.props.base === index ? index : index + " hide";
-
-                if( _.isObject(html)){
-
-                    return <span key = { index } className={ className } dangerouslySetInnerHTML={ html }></span>;
-
-                } else {
-
-                    return <span key = { index } className={ className }>{ html }</span>;
-
-                }
-
-            }.bind(this));
-
-            return <span key = { index } className = { currID } onMouseOver={ this.handleMouseOver }>{ spanHTML }</span>;
 
         }.bind(this));
 
