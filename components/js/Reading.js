@@ -4,29 +4,16 @@ var React = require('react'),
 
 var Reading = React.createClass({
 
-    getInitialState: function() {
+    getOpacity: function(){
 
-        return { 
-            opacity: 0,
-            excludeList: [] 
-        };  
-    },
-
-    componentDidMount: function(){
-        this.setOpacity();
-    },
-
-    setOpacity: function(){
-
-        var opacity = this.props.appID == "span" ? 0 : 0.5;
-        var avgEditDistance = this.getAvgEditDistance()
-
-        this.setState({ opacity: opacity });
+        var avgEditDistance = this.getAvgEditDistance();
+        var opacity = avgEditDistance/30 > 1 ? 1 : avgEditDistance/30;
+        return opacity;
     },
 
     getAvgEditDistance: function(array){
 
-        var excludeList = this.state.excludeList;
+        var excludeList = this.props.excludes;
 
         var lDists = _.map(this.props.currApp, function(item,index){
 
@@ -37,9 +24,6 @@ var Reading = React.createClass({
         }.bind(this));
 
         var meanDistance = _.meanBy(lDists);
-        var meanDistance = _.isEmpty(meanDistance) ? 0 : meanDistance;
-
-
         return meanDistance;
     },
 
@@ -78,6 +62,10 @@ var Reading = React.createClass({
 
     render: function(){
 
+        console.log(this.props.appID);
+        var opacity = this.props.appID == "span" ? {} 
+            : {backgroundColor:"rgba(55,100,55," + this.getOpacity() + ")"};
+            
         var spanHTML = _.map(this.props.currApp, function(item,index){
 
             var html = this.gsheetToHTML(item);
@@ -90,14 +78,14 @@ var Reading = React.createClass({
 
             } else {
 
-                return (<span key = { index } className={ className } style={ {backgroundColor:"rgba(55,100,55," + this.state.opacity + ")"} }>{ html }</span>);
+                return (<span key = { index } className={ className } >{ html }</span>);
             }
 
         }.bind(this));
 
 
         return( 
-            <span className = { this.props.appID } onMouseOver={ this.handleMouseOver }>{ spanHTML }</span>
+            <span className = { this.props.appID } style={ opacity } onMouseOver={ this.handleMouseOver }>{ spanHTML }</span>
         );
     }
 });

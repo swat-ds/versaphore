@@ -22,8 +22,8 @@ var Apparatus = React.createClass({
             return (
                 <Reading
                 base = { this.props.base }
-                exclude = { this.props.excludeList }
-                appID = { currID }
+                excludes = { this.props.excludeList }
+                appID = { currID[0] }
                 currApp = { item[currID] }
                 key = { index }
                 getCurrentReadings = { this.getCurrentReadings }
