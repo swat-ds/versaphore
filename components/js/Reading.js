@@ -17,7 +17,11 @@ var Reading = React.createClass({
 
         var lDists = _.map(this.props.currApp, function(item,index){
 
-            if(!_.isEmpty(item) && !_.isEmpty(this.props.currApp[this.props.base])) {
+            if(
+                !_.isEmpty(item)
+                && !_.isEmpty(this.props.currApp[this.props.base])
+                && !_.includes(this.props.excludes, index)
+            ) {
                 var l = new Levenshtein(this.props.currApp[this.props.base],item);
                 return l.distance;
             }
@@ -62,7 +66,6 @@ var Reading = React.createClass({
 
     render: function(){
 
-        console.log(this.props.appID);
         var opacity = this.props.appID == "span" ? {} 
             : {backgroundColor:"rgba(55,100,55," + this.getOpacity() + ")"};
             

@@ -135,7 +135,7 @@ var ExcludeSelect = React.createClass({
 
         var currSelected = this.state.value;
 
-        if(_.indexOf(currSelected, e.target.value) == -1){
+        if( !_.includes(currSelected, e.target.value) ){
             currSelected.push(e.target.value);
         } else {
             _.remove(currSelected, function(o){
@@ -156,8 +156,6 @@ var ExcludeSelect = React.createClass({
             <option value = { witID } key = { index }>{ item[witID] }</option>
         );
         });
-
-        console.log(this.props.excludes);
 
         return(
 
