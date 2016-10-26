@@ -15,25 +15,25 @@ var MainInterface = React.createClass({
             workspaces: [],
             workTitle: "",
             
-            // { "workspaceName":"","sheetKey":""}
             currentWorkspace: {},
+            // { "workspaceName":"","sheetKey":""}
+
             currentBase: "",
             currentApparatus: [],
 
             apparatus: {},
-
-            // {{ "witnessID":"", "creator":""}}
-            witnesses: {},
-
             // ["appID": 
-                    // { str witID: str reading  },
-                    // { str witID: str reading  },
-                    // { str witID: str reading  } ]
-                    
+                // { str witID: str reading  },
+                // { str witID: str reading  },
+                // { str witID: str reading  } ]
+
+            witnesses: {},
+            // {{ "witnessID":"", "creator":""}}
+
             googleAPI: {
                 scope: 'https://sheets.googleapis.com/v4/spreadsheets',
                 key: `${googleAPIKey}`            }
-            }
+            };
     }, // getInitialState
 
     componentDidMount: function(){
@@ -176,10 +176,9 @@ var MainInterface = React.createClass({
 
     addWorkspace: function(workspace){
 
-        console.log(workspace);
-
-        // TODO post data to json php
-        this.setState({});
+        var currWorkspaces = this.state.workspaces;
+        currWorkspaces.push(workspace);
+        this.setState({ workspaces: currWorkspaces });
 
     }, // addWorkspace
 
