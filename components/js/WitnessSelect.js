@@ -163,7 +163,7 @@ var ExcludeSelect = React.createClass({
 
             <div className="form-group">
             <label className="text-muted" htmlFor="excludeSelect">
-                base witness
+                ignore list
             </label>
             <select multiple={ true } name="excludeSelect" id="excludeSelect" className="form-control" value={ this.state.value } onChange={ this.handleExcludeSelect }>
                 <option value = "" className = { _.isEmpty(this.props.excludes) ? "hidden" : "show" }>include all</option>
