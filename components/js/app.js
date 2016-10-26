@@ -33,7 +33,10 @@ var MainInterface = React.createClass({
 
             googleAPI: {
                 scope: 'https://sheets.googleapis.com/v4/spreadsheets',
-                key: `${googleAPIKey}`            }
+                key: `${googleAPIKey}`            
+            },
+
+            saveWorkspaceURL: 'http://ds.swarthmore.edu/versaphore/workspace-add.php'
             };
     }, // getInitialState
 
@@ -169,7 +172,16 @@ var MainInterface = React.createClass({
 
         var currWorkspaces = this.state.workspaces;
         currWorkspaces.push(workspace);
-        this.setState({ workspaces: currWorkspaces });
+
+        this.serverRequest = $.ajax({
+                url: this.state.saveWorkspaceURL,
+                data: {
+                    workspaceName: workspace.workspaceName,
+                    sheetKey: workspace.sheetKey
+                }
+            }).done(function(d){
+                this.setState({ workspaces: currWorkspaces });
+            });
 
     }, // addWorkspace
 
