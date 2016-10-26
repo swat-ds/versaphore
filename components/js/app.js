@@ -36,7 +36,7 @@ var MainInterface = React.createClass({
                 key: `${googleAPIKey}`            
             },
 
-            saveWorkspaceURL: 'http://ds.swarthmore.edu/versaphore/workspace-add.php'
+            saveWorkspaceURL: 'http://ds.swarthmore.edu/versaphore/add-workspace.php'
             };
     }, // getInitialState
 
