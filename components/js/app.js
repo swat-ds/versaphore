@@ -57,9 +57,7 @@ var MainInterface = React.createClass({
         var currentWorkspace = this.getCurrentWorkspace(workspaceName);
         this.setCurrentWorkspace(currentWorkspace);
         this.setCurrentWitnesses(currentWorkspace);
-
-        var currentBase = _.isEmpty(currentWorkspace) ? "" : "wit-0";
-        this.setState({ currentBase: currentBase });
+        this.setState({ currentBase: "wit-0" });    
 
     }, // handleWorkspaceUpdate
 
@@ -161,10 +159,6 @@ var MainInterface = React.createClass({
 
     setCurrentBase: function(witnessID){
 
-       if( _.isEmpty(this.state.currentBase) ){
-            $('#baseSelect option:first-child').remove();
-        }
-
         this.setState({ 
             currentBase: witnessID
         });
@@ -217,6 +211,8 @@ var MainInterface = React.createClass({
             <WitnessSelect 
                 workspaces = { this.state.workspaces }
                 witnesses = { this.state.witnesses }
+                base = { this.state.currentBase }
+                excludeList = { this.state.currentExcludeList }
                 onWorkspaceSelect = { this.handleWorkspaceUpdate }
                 onBaseSelect = { this.setCurrentBase }
                 onExcludeSelect = { this.setCurrentExclude }
@@ -229,7 +225,7 @@ var MainInterface = React.createClass({
                 witnesses = { this.state.witnesses }
                 apparatus = { this.state.apparatus }
                 base = { this.state.currentBase }
-                excludeList = { this.state.currentExludeList }
+                excludeList = { this.state.currentExcludeList }
                 getCurrentReadings = { this.updateCurrentReadings }
             />
             <ReadingsCompare

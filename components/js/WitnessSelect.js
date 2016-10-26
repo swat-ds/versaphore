@@ -16,9 +16,8 @@ var WitnessSelect = React.createClass({
         return this.props.onWorkspaceSelect(e.target.value);
     },
 
-    handleBaseSelect: function(e){
-        e.preventDefault();
-        return this.props.onBaseSelect(e.target.value);
+    handleBaseSelect: function(witID){
+         return this.props.onBaseSelect(witID);
     },
 
     handleExcludeSelect: function(excludeList){
@@ -56,18 +55,16 @@ var WitnessSelect = React.createClass({
             <div className="row">
 
             <div className="form-inline pull-left col-md-8"> 
-                <div className="form-group">
 
-                <label className="text-muted" htmlFor="baseSelect">
-                    base witness
-                </label>
-                <select name="baseSelect" id="baseSelect" className="form-control" value="" onChange={ this.handleBaseSelect }>
-                    { baseOptions }
-                </select>
-                </div>
+                <BaseSelect
+                    base = { this.props.base }
+                    witnesses = { this.props.witnesses }
+                    onBaseSelect = { this.handleBaseSelect }
+                />
 
                 <ExcludeSelect 
                     witnesses = { this.props.witnesses }
+                    excludes = { this.props.excludeList }
                     onExcludeSelect = { this.handleExcludeSelect }
                 />
             </div>
@@ -96,6 +93,35 @@ var WitnessSelect = React.createClass({
     }
 });
 
+var BaseSelect = React.createClass({
+
+    handleBaseSelect: function(e){
+        e.preventDefault();
+        this.props.onBaseSelect(e.target.value);
+    },
+
+    render: function() {
+
+        var baseOptions = _.map(this.props.witnesses, function(item,index){
+
+            var witID = _.keys(item)[0];
+            return <option value = { witID } key = { index }>{ item[witID] }</option>;
+        });
+
+        return (
+            <div className="form-group">
+
+            <label className="text-muted" htmlFor="baseSelect">
+            base witness
+            </label>
+            <select name="baseSelect" id="baseSelect" className="form-control" onChange={ this.handleBaseSelect }>
+            { baseOptions }
+            </select>
+            </div>
+        );
+    }
+});
+
 var ExcludeSelect = React.createClass({
 
     getInitialState: function() {
@@ -113,27 +139,25 @@ var ExcludeSelect = React.createClass({
             currSelected.push(e.target.value);
         } else {
             _.remove(currSelected, function(o){
-                console.log(o !== e.target.value);
-                console.log(o != e.target.value);
                 return o != e.target.value;
             });
         }
 
-        console.log(e.target.value);
-        console.log(currSelected);
-
         this.setState({ value: currSelected });
-        this.props.onExcludeSelect(this.state.currSelected);
+        this.props.onExcludeSelect(currSelected);
     },
 
     render: function(){
-        var baseOptions = _.map(this.props.witnesses, function(item,index){
+
+        var excludeOptions = _.map(this.props.witnesses, function(item,index){
 
             var witID = _.keys(item)[0];
             return(
             <option value = { witID } key = { index }>{ item[witID] }</option>
         );
         });
+
+        console.log(this.props.excludes);
 
         return(
 
@@ -142,7 +166,8 @@ var ExcludeSelect = React.createClass({
                 base witness
             </label>
             <select multiple={ true } name="excludeSelect" id="excludeSelect" className="form-control" value={ this.state.value } onChange={ this.handleExcludeSelect }>
-                { baseOptions }
+                <option value = "" className = { _.isEmpty(this.props.excludes) ? "hidden" : "show" }>include all</option>
+                { excludeOptions }
             </select>
             </div>
 
