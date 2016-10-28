@@ -36,7 +36,7 @@ var MainInterface = React.createClass({
                 key: `${googleAPIKey}`            
             },
 
-            saveWorkspaceURL: 'http://ds.swarthmore.edu/versaphore/add-workspace.php'
+            dataBaseURL: 'http://ds.swarthmore.edu/versaphore/data.php'
             };
     }, // getInitialState
 
@@ -174,18 +174,33 @@ var MainInterface = React.createClass({
         currWorkspaces.push(workspace);
 
         this.serverRequest = $.ajax({
-                url: this.state.saveWorkspaceURL,
+                url: this.state.dataBaseURL,
                 data: {
+                    action: 'add',
                     name: workspace.workspaceName,
                     key: workspace.sheetKey
                 }
             }).done(function(d){
+                alert(d.toString());
                 this.setState({ workspaces: currWorkspaces });
-            });
+            }.bind(this));
 
     }, // addWorkspace
 
     deleteWorkspace: function(){
+
+        var workspace = this.state.currentWorkspace;
+
+        this.serverRequest = $.ajax({
+                url: this.state.dataBaseURL,
+                data: {
+                    action: 'del',
+                    name: workspace.workspaceName,
+                    key: workspace.sheetKey
+                }
+            }).done(function(d){
+                alert(d.toString());
+            }.bind(this));
 
         var currentWorkspaces = _.filter(this.state.workspaces,function(o){
             return o.workspaceName !== this.state.currentWorkspace.workspaceName;
