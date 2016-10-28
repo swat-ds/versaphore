@@ -5,8 +5,7 @@ var gulp = require('gulp'),
 
 var src = './components',
     dest = './builds/app',
-    twbs = './node_modules/bootstrap-sass/assets',
-    bsSelect = './node_modules/bootstrap-select/dist';
+    twbs = './node_modules/bootstrap-sass/assets';
 
 gulp.task('js', function(){
     return gulp.src( src + '/js/app.js' )
@@ -37,14 +36,15 @@ gulp.task('icons', function(){
 });
 
 gulp.task('html', function(){
-    gulp.src( dest + '/**/*.html' );
-});
+    return gulp.src( src + '/*.html')
+        .pipe( gulp.dest( dest + '/') ); 
+    });
 
 gulp.task('watch', function(){
     gulp.watch( src + '/js/**/*.js', ['js']);
     gulp.watch( src + '/sass/**/*.scss', ['sass']);
     gulp.watch( src + '/sass/**/*.css', ['sass']);
-    gulp.watch( dest + '/**/*.html', ['html']);
+    gulp.watch( src + '/**/*.html', ['html']);
 });
 
 gulp.task('webserver', function(){
