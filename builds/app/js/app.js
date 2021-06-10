@@ -472,7 +472,7 @@ var MainInterface = React.createClass({displayName: "MainInterface",
 
             googleAPI: {
                 scope: 'https://sheets.googleapis.com/v4/spreadsheets',
-                key: `${googleAPIKey}`            
+                key: `${googleAPIKey}`
             },
 
             dataBaseURL: 'http://ds.swarthmore.edu/versaphore/data.php'
